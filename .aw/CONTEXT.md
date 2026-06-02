@@ -24,7 +24,7 @@
 - Tech stack: HTML, CSS, JavaScript, JSON (no framework required for MVP). Single HTML file.
 - JSON top-level fields: `id` (board identifier, used to namespace localStorage), `cards`, `connections`.
 - Card fields: `id` and `text` only. No type, color, or title for MVP.
-- Card ID format: `h-1, h-2…` for human-created cards; `ai-1, ai-2…` for AI-created cards. Counters tracked separately, never collide.
+- Card ID format: `card-1, card-2…` (sequential numbering). Frame IDs: `frame-1, frame-2…`.
 - Connection fields: `from`, `to` (directed, arrow points to `to`), and optional `label`. No weight or style.
 - JSON loading: drag-and-drop a JSON file onto the canvas to load or reload. File picker (`<input type="file">`) as fallback. No server required. Firefox compatible.
 - Browser is read/write: user can create, edit, and delete cards and connections in the UI, then export the updated JSON.

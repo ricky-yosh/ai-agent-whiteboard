@@ -83,7 +83,7 @@ class Store {
 
   addCard(text = '', parentId) {
     const snap = this._snapshot();
-    const card = { id: `h-${this.nextHumanCardNumber()}`, text };
+    const card = { id: `card-${this.nextCardNumber()}`, text };
     if (parentId) {
       const parent = this.cards.find((c) => c.id === parentId);
       if (parent && !parent.parentId) {
@@ -217,7 +217,7 @@ class Store {
 
   addFrame(text, cardIds, scope) {
     const snap = this._snapshot();
-    const frame = { id: `hf-${this.nextHumanFrameNumber()}`, text, cards: Array.isArray(cardIds) ? [...cardIds] : [] };
+    const frame = { id: `frame-${this.nextFrameNumber()}`, text, cards: Array.isArray(cardIds) ? [...cardIds] : [] };
     if (scope) frame.scope = scope;
     this.frames.push(frame);
     this._commit(snap);
@@ -263,20 +263,20 @@ class Store {
     }
   }
 
-  nextHumanFrameNumber() {
+  nextFrameNumber() {
     let max = 0;
     for (const f of this.frames) {
-      const match = /^hf-(\d+)$/.exec(f.id);
+      const match = /^frame-(\d+)$/.exec(f.id);
       if (!match) continue;
       max = Math.max(max, Number(match[1]));
     }
     return max + 1;
   }
 
-  nextHumanCardNumber() {
+  nextCardNumber() {
     let max = 0;
     for (const card of this.cards) {
-      const match = /^h-(\d+)$/.exec(card.id);
+      const match = /^card-(\d+)$/.exec(card.id);
       if (!match) {
         continue;
       }

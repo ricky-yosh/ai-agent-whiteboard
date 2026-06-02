@@ -1505,7 +1505,7 @@ function beginConnection(cardElement, cardId, state, pointerId, startX, startY) 
       // Dropped on empty canvas — create a card at the drop point and connect.
       const dropX = (finishEvent.clientX - boardRect.left - panX) / zoom - CARD_WIDTH / 2;
       const dropY = (finishEvent.clientY - boardRect.top - panY) / zoom - CARD_HEIGHT / 2;
-      const newCardId = `h-${store.nextHumanCardNumber()}`;
+      const newCardId = `card-${store.nextCardNumber()}`;
       setStoredPosition(store.getState().id, newCardId, dropX, dropY);
       cancelConnectionGesture();
       const newCard = store.addCard('', currentScope || undefined);
@@ -2117,7 +2117,7 @@ boardSurface.addEventListener('dblclick', (event) => {
   const bounds = boardSurface.getBoundingClientRect();
   const x = (event.clientX - bounds.left - panX) / zoom - CARD_WIDTH / 2;
   const y = (event.clientY - bounds.top - panY) / zoom - CARD_HEIGHT / 2;
-  const cardId = `h-${store.nextHumanCardNumber()}`;
+  const cardId = `card-${store.nextCardNumber()}`;
   setStoredPosition(store.getState().id, cardId, x, y);
   const card = store.addCard('', currentScope);
 

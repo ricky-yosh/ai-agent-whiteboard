@@ -38,17 +38,17 @@ The board JSON has four top-level fields.
 ### Cards
 
 ```json
-{ "id": "h-1", "text": "Label\nSecond line", "parentId": "h-3" }
+{ "id": "card-1", "text": "Label\nSecond line", "parentId": "card-3" }
 ```
 
-- `id`: human-created IDs use `h-N`; **your additions use `a-N`** (scan all existing IDs across cards, connections, and frames to find the highest `a-N`, then increment)
+- `id`: sequential format `card-N` (scan all existing card IDs to find the highest number, then increment)
 - `text`: the card label; newlines allowed for multi-line content
 - `parentId`: optional; makes this card a child of the named card (nested scope). **Max one level deep** — a card with a `parentId` cannot itself be a parent.
 
 ### Connections
 
 ```json
-{ "from": "h-1", "to": "h-2", "label": "optional", "scope": "h-3" }
+{ "from": "card-1", "to": "card-2", "label": "optional", "scope": "card-3" }
 ```
 
 - `from` and `to` must reference existing card IDs; `from !== to`
@@ -58,10 +58,10 @@ The board JSON has four top-level fields.
 ### Frames
 
 ```json
-{ "id": "f-1", "text": "Frame Label", "cards": ["h-1", "h-2"], "scope": "h-3" }
+{ "id": "frame-1", "text": "Frame Label", "cards": ["card-1", "card-2"], "scope": "card-3" }
 ```
 
-- `id`: human-created frames use `hf-N`; **your additions use `af-N`**
+- `id`: sequential format `frame-N` (scan all existing frame IDs to find the highest number, then increment)
 - `text`: **never empty** — always a short descriptive name (e.g. "Wizard Flow", "Data Model")
 - `cards`: list of card IDs the frame groups; all must be in the same scope
 - `scope`: set to the parent card ID when the frame is inside a nested view; omit for root-level frames
@@ -74,7 +74,8 @@ When the intent is clear:
 
 1. Re-read the file immediately before writing (last-writer-wins — the user may have moved things)
 2. Compute additions:
-   - Generate `a-N` IDs by scanning the full board for the highest existing `a-N`
+   - Generate `card-N` IDs by scanning all existing card IDs for the highest number
+   - Generate `frame-N` IDs by scanning all existing frame IDs for the highest number
    - Respect nesting and scope rules above
    - Never add a `meta` field
 3. Write the updated JSON back to the same path
