@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Whiteboard</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app">
+      <header class="toolbar is-hidden" id="toolbar">
+        <div class="brand">
+          <div class="brand__label">Whiteboard</div>
+          <div class="brand__sep" aria-hidden="true">·</div>
+          <div class="brand__board" id="boardName">Untitled</div>
+          <div class="brand__sep brand__sep--path" aria-hidden="true" hidden>·</div>
+          <div class="brand__path" id="boardPath" hidden></div>
+          <button class="button button--icon brand__folder" id="openFolderButton" type="button" aria-label="Open folder" hidden>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+            </svg>
+          </button>
+        </div>
+        <div class="toolbar__actions">
+          <button class="button button--ghost" id="newBoardButton" type="button">New</button>
+          <button class="button button--ghost" id="loadButton" type="button">Load</button>
+          <button class="button button--ghost" id="copyButton" type="button">Copy</button>
+          <button class="button button--ghost" id="downloadButton" type="button">Export</button>
+          <button class="button button--ghost" id="layoutButton" type="button">Layout</button>
+          <div class="toolbar__divider" aria-hidden="true"></div>
+          <button class="button button--icon" id="jsonToggleButton" type="button" aria-label="Toggle JSON inspector">{ }</button>
+          <button class="button button--icon" id="shortcutsButton" type="button" aria-label="Keyboard shortcuts">?</button>
+        </div>
+      </header>
+
+      <div class="shortcuts-overlay" id="shortcutsOverlay" role="dialog" aria-modal="true" aria-labelledby="shortcutsTitle">
+        <div class="shortcuts-card">
+          <div class="shortcuts-card__header">
+            <h2 class="shortcuts-card__title" id="shortcutsTitle">Keyboard Shortcuts</h2>
+            <button class="shortcuts-card__close" id="shortcutsClose" type="button" aria-label="Close">&#x2715;</button>
+          </div>
+          <div class="shortcuts-list">
+            <div class="shortcut__key"><kbd>Double-click</kbd></div>
+            <div class="shortcut__desc">Create a card on the canvas</div>
+            <div class="shortcut__key">Drag canvas</div>
+            <div class="shortcut__desc">Marquee-select multiple cards</div>
+            <div class="shortcut__key"><kbd>Shift</kbd> + drag card</div>
+            <div class="shortcut__desc">Draw a connection to another card</div>
+            <div class="shortcut__key"><kbd>Double-click</kbd> connection</div>
+            <div class="shortcut__desc">Edit connection label</div>
+            <div class="shortcut__key">Hover connection + <kbd>Enter</kbd></div>
+            <div class="shortcut__desc">Edit connection label</div>
+            <div class="shortcut__key"><kbd>Backspace</kbd> / <kbd>Delete</kbd></div>
+            <div class="shortcut__desc">Delete selected card or connection</div>
+            <div class="shortcut__key">Two-finger scroll</div>
+            <div class="shortcut__desc">Pan the canvas</div>
+            <div class="shortcut__key">Pinch / <kbd>Ctrl</kbd> + scroll</div>
+            <div class="shortcut__desc">Zoom in and out</div>
+            <div class="shortcut__key">Middle-mouse drag</div>
+            <div class="shortcut__desc">Pan the canvas</div>
+            <div class="shortcut__key"><kbd>0</kbd></div>
+            <div class="shortcut__desc">Reset view to origin (0, 0)</div>
+            <div class="shortcut__key"><kbd>F</kbd></div>
+            <div class="shortcut__desc">Wrap selected cards in a frame</div>
+            <div class="shortcut__key">Click frame, then drag</div>
+            <div class="shortcut__desc">Select then move the frame and all its cards</div>
+            <div class="shortcut__key"><kbd>Double-click</kbd> frame</div>
+            <div class="shortcut__desc">Create a card inside the frame</div>
+            <div class="shortcut__key"><kbd>Double-click</kbd> frame label</div>
+            <div class="shortcut__desc">Rename the frame</div>
+            <div class="shortcut__key"><kbd>Space</kbd> + drag card</div>
+            <div class="shortcut__desc">Escape a frame — frame shrinks to exclude the card</div>
+            <div class="shortcut__key"><kbd>Enter</kbd> on selected card</div>
+            <div class="shortcut__desc">Enter the card as a container (stacked cards have children)</div>
+            <div class="shortcut__key"><kbd>Esc</kbd></div>
+            <div class="shortcut__desc">Exit container scope</div>
+            <div class="shortcut__key"><kbd>Ctrl</kbd> / <kbd>⌘</kbd> + <kbd>Z</kbd></div>
+            <div class="shortcut__desc">Undo (structural changes; drags are not undoable)</div>
+            <div class="shortcut__key"><kbd>Ctrl</kbd> / <kbd>⌘</kbd> + <kbd>Shift</kbd> + <kbd>Z</kbd></div>
+            <div class="shortcut__desc">Redo</div>
+            <div class="shortcut__key"><kbd>?</kbd></div>
+            <div class="shortcut__desc">Open this shortcuts panel</div>
+          </div>
+        </div>
+      </div>
+
+      <main class="canvas canvas--empty" id="canvas">
+        <div class="error-banner" id="errorBanner" role="alert" hidden></div>
+
+        <section class="board" id="board" aria-label="Board canvas">
+          <nav class="breadcrumb" id="breadcrumb" aria-label="Scope navigation" hidden>
+            <button class="breadcrumb__back" id="breadcrumbBack" type="button">← Root</button>
+            <span class="breadcrumb__current" id="breadcrumbCurrent"></span>
+          </nav>
+          <div class="board__hint" id="boardHint" aria-hidden="true">
+            Double-click to create a card&nbsp;&nbsp;·&nbsp;&nbsp;Shift-drag between cards to connect
+          </div>
+          <div class="board__surface" id="boardSurface" aria-hidden="true"></div>
+          <div class="marquee-rect" id="marqueeRect" aria-hidden="true"></div>
+          <svg class="connection-draft" id="connectionDraft" aria-hidden="true">
+            <defs>
+              <marker id="draft-arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                <polygon points="0 0, 10 3.5, 0 7" fill="#b4befe" />
+              </marker>
+            </defs>
+            <path class="connection-draft__line" id="connectionDraftLine" marker-end="url(#draft-arrowhead)"></path>
+          </svg>
+          <form class="connection-prompt" id="connectionPrompt">
+            <input
+              class="connection-prompt__input"
+              id="connectionLabelInput"
+              name="connectionLabel"
+              placeholder="Label (optional) — Enter to skip, Esc to cancel"
+              autocomplete="off"
+              spellcheck="false"
+            />
+          </form>
+          <textarea
+            class="card-editor"
+            id="cardEditor"
+            aria-label="Card text editor"
+            spellcheck="false"
+          ></textarea>
+        </section>
+
+        <div class="json-minimap" id="jsonMinimap" role="button" tabindex="0" aria-label="Open JSON inspector" hidden>
+          <pre class="json-minimap__content" id="jsonMinimapContent" aria-hidden="true"></pre>
+          <div class="json-minimap__expand" aria-hidden="true">⛶</div>
+          <button class="json-minimap__close" id="jsonMinimapClose" type="button" aria-label="Hide JSON inspector">&#x2715;</button>
+        </div>
+
+        <div class="json-modal-backdrop" id="jsonModalBackdrop" hidden></div>
+        <div class="json-modal" id="jsonModal" role="dialog" aria-modal="true" aria-label="JSON inspector" hidden>
+          <div class="json-modal__header">
+            <span class="json-modal__title">Board JSON</span>
+            <button class="json-modal__close" id="jsonModalClose" type="button" aria-label="Close">&#x2715;</button>
+          </div>
+          <pre class="json-modal__content" id="jsonModalContent"></pre>
+        </div>
+      </main>
+
+      <input
+        class="file-input"
+        id="fileInput"
+        type="file"
+        accept="application/json,.json"
+        aria-label="Load JSON file"
+      />
+    </div>
+
+    <script src="store.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
